@@ -16,27 +16,33 @@
                 <div class="card p-4 shadow-sm">
                     <h4 class="mb-3">Nuevo Prospecto</h4>
                     
-                    <div id="mensaje-alerta"></div>
+                    <div id="mensaje-alerta" class="alert d-none" role="alert"></div>
 
-                    <form id="formulario-prospecto">
+                    <form id="formulario-prospecto" novalidate>
                         <div class="mb-3">
-                            <label class="form-label">Nombre:</label>
-                            <input type="text" id="campo-nombre" class="form-control" placeholder="Nombre del cliente">
+                            <label class="form-label">Nombre *</label>
+                            <input type="text" id="campo-nombre" class="form-control" placeholder="Nombre del cliente" autocomplete="off">
+                            <div class="invalid-feedback">El nombre del cliente es obligatorio y debe tener al menos 3 caracteres.</div>
+                            <div class="valid-feedback">Nombre estructurado correctamente.</div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Categoría o Tipo:</label>
+                            <label class="form-label">Categoría o Tipo *</label>
                             <select id="campo-categoria" class="form-select">
                                 <option value="">-- Seleccione una opción --</option>
                                 <option value="Cliente VIP">Cliente VIP</option>
                                 <option value="Cliente Frecuente">Cliente Frecuente</option>
                                 <option value="Nuevo Prospecto">Nuevo Prospecto</option>
                             </select>
+                            <div class="invalid-feedback">Debe seleccionar una categoría de prospecto válida.</div>
+                            <div class="valid-feedback">Categoría asignada.</div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Descripción:</label>
+                            <label class="form-label">Descripción *</label>
                             <textarea id="campo-descripcion" class="form-control" rows="3" placeholder="Detalles o requerimientos..."></textarea>
+                            <div class="invalid-feedback">Por favor, agregue una descripción detallada (mínimo 10 caracteres).</div>
+                            <div class="valid-feedback">Descripción validada.</div>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Registrar Cliente</button>
