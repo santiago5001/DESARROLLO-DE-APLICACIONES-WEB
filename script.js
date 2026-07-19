@@ -6,6 +6,8 @@ const inputDescripcion = document.getElementById('campo-descripcion');
 const contenedorLista = document.getElementById('contenedor-lista');
 const contadorTotal = document.getElementById('contador-total');
 const mensajeAlerta = document.getElementById('mensaje-alerta');
+const textoAlerta = document.getElementById('texto-alerta');
+const spinnerCarga = document.getElementById('spinner-carga');
 
 let prospectos = [];
 let idAutoincremental = 1;
@@ -40,7 +42,7 @@ function validarCategoria() {
     return true;
 }
 
-function validar苳escripcion() {
+function validarDescripcion() {
     const valor = inputDescripcion.value.trim();
     if (valor === '' || valor.length < 10) {
         inputDescripcion.classList.remove('is-valid');
@@ -55,7 +57,7 @@ function validar苳escripcion() {
 function validarFormularioCompleto() {
     const nombreValido = validarNombre();
     const categoriaValida = validarCategoria();
-    const descripcionValida = validar苳escripcion();
+    const descripcionValida = validarDescripcion();
     return nombreValido && categoriaValida && descripcionValida;
 }
 
@@ -68,16 +70,22 @@ inputNombre.addEventListener('input', function() {
 inputCategoria.addEventListener('change', validarCategoria);
 inputCategoria.addEventListener('blur', validarCategoria);
 
-inputDescripcion.addEventListener('blur', validar苳escripcion);
+inputDescripcion.addEventListener('blur', validarDescripcion);
 inputDescripcion.addEventListener('input', function() {
-    if (inputDescripcion.classList.contains('is-invalid')) validar苳escripcion();
+    if (inputDescripcion.classList.contains('is-invalid')) validarDescripcion();
 });
 
-// ── 4. ALERTAS DEL SISTEMA ──
+// ── 4. ALERTAS MEJORADAS CON COMPONENTES DE BOOTSTRAP (SEMANA 8) ──
 function mostrarAlertaGlobal(tipo, mensaje) {
     mensajeAlerta.classList.remove('d-none', 'alert-success', 'alert-danger');
-    mensajeAlerta.classList.add(tipo === 'exito' ? 'alert-success' : 'alert-danger');
-    mensajeAlerta.textContent = mensaje;
+    
+    if (tipo === 'exito') {
+        mensajeAlerta.classList.add('alert-success');
+    } else {
+        mensajeAlerta.classList.add('alert-danger');
+    }
+    
+    textoAlerta.textContent = mensaje;
     
     setTimeout(() => {
         mensajeAlerta.classList.add('d-none');
@@ -88,23 +96,19 @@ function actualizarContador() {
     contadorTotal.textContent = prospectos.length;
 }
 
-// ── 5. RENDERIZADO DINÁMICO REPETITIVO (REQUERIMIENTO SEMANA 7) ──
-function renderizarListaProspectos() {
-    // Limpiamos el contenedor para evitar repeticiones manuales de bloques HTML
+// ── 5. RENDERIZADO DINÁMICO REPETITIVO (CONSERVADO DE SEMANA 7) ──
+function renderListaProspectos() {
     contenedorLista.innerHTML = "";
 
-    // Verificación de estado de la aplicación
     if (prospectos.length === 0) {
         inicializarMensajeVacio();
         return;
     }
 
-    // Estructura repetitiva exigida: recorremos cada objeto del arreglo
     prospectos.forEach(function(prospecto) {
-        let colorBorde = "border-primary"; // Por defecto
+        let colorBorde = "border-primary"; 
         let colorBadge = "bg-info";
 
-        // Estructura condicional exigida: cambiamos los estilos según el estado/tipo de datos
         if (prospecto.categoria === "Cliente VIP") {
             colorBorde = "border-warning";
             colorBadge = "bg-warning text-dark";
@@ -116,7 +120,6 @@ function renderizarListaProspectos() {
             colorBadge = "bg-primary text-white";
         }
 
-        // Generación del bloque del componente dinámico en texto
         const tarjetaHtml = `
             <div class="card mb-3 shadow-sm border-start ${colorBorde} border-4" id="prospecto-${prospecto.id}">
                 <div class="card-body">
@@ -130,19 +133,17 @@ function renderizarListaProspectos() {
             </div>
         `;
 
-        // Se concatena al contenedor de la lista sin repetir bloques fijos de código
         contenedorLista.innerHTML += tarjetaHtml;
     });
 }
 
-// Función encargada de borrar un elemento del arreglo y redibujar
 function eliminarProspecto(idBuscar) {
     prospectos = prospectos.filter(p => p.id !== idBuscar);
     actualizarContador();
-    renderizarListaProspectos(); // Volvemos a dibujar de forma limpia
+    renderListaProspectos(); 
 }
 
-// ── 6. EVENTO SUBMIT (CAPTURA NUEVOS DATOS) ──
+// ── 6. EVENTO SUBMIT CON SPINNER DE CARGA INCORPORADO (SEMANA 8) ──
 formulario.addEventListener('submit', function(evento) {
     evento.preventDefault(); 
 
@@ -151,26 +152,30 @@ formulario.addEventListener('submit', function(evento) {
         return;
     }
 
-    // Empaquetamos la información del formulario en el objeto
-    const nuevoProspecto = {
-        id: idAutoincremental++,
-        nombre: inputNombre.value.trim(),
-        categoria: inputCategoria.value,
-        descripcion: inputDescripcion.value.trim()
-    };
+    // Encendemos el Spinner de carga simulado exigido en las instrucciones
+    spinnerCarga.classList.remove('d-none');
 
-    // Almacenamos en memoria
-    prospectos.push(nuevoProspecto);
-    
-    // Renderizado dinámico general
-    renderizarListaProspectos();
-    
-    mostrarAlertaGlobal('exito', '✔ Prospecto comercial guardado dinámicamente.');
-    formulario.reset();
-    
-    // Remueve las clases verdes/rojas tras limpiar el formulario
-    [inputNombre, inputCategoria, inputDescripcion].forEach(el => el.classList.remove('is-valid', 'is-invalid'));
-    actualizarContador();
+    // Simulamos un retraso de procesamiento de 800ms para que el spinner sea visible
+    setTimeout(() => {
+        // Ocultamos el spinner tras el proceso
+        spinnerCarga.classList.add('d-none');
+
+        const nuevoProspecto = {
+            id: idAutoincremental++,
+            nombre: inputNombre.value.trim(),
+            categoria: inputCategoria.value,
+            descripcion: inputDescripcion.value.trim()
+        };
+
+        prospectos.push(nuevoProspecto);
+        renderListaProspectos();
+        
+        mostrarAlertaGlobal('exito', '✔ Prospecto comercial procesado y guardado dinámicamente.');
+        formulario.reset();
+        
+        [inputNombre, inputCategoria, inputDescripcion].forEach(el => el.classList.remove('is-valid', 'is-invalid'));
+        actualizarContador();
+    }, 800);
 });
 
 // Lanzamiento inicial
