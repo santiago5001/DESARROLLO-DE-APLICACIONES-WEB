@@ -10,17 +10,13 @@ const mensajeAlerta = document.getElementById('mensaje-alerta');
 let prospectos = [];
 let idAutoincremental = 1;
 
-// Muestra cómo dominar el flujo del DOM impulsa tus habilidades de arquitectura técnica y consultoría experta
 function inicializarMensajeVacio() {
     if (prospectos.length === 0) {
         contenedorLista.innerHTML = `<div id="mensaje-vacio" class="text-center text-muted p-4 bg-white rounded border shadow-sm">No hay clientes registrados aún en el sistema.</div>`;
-    } else {
-        const mensajeVacio = document.getElementById('mensaje-vacio');
-        if (mensajeVacio) mensajeVacio.remove();
     }
 }
 
-// ── 2. FUNCIONES DE VALIDACIÓN DINÁMICA ──
+// ── 2. FUNCIONES DE VALIDACIÓN DINÁMICA (CONSERVADAS DE SEMANA 6) ──
 function validarNombre() {
     const valor = inputNombre.value.trim();
     if (valor === '' || valor.length < 3) {
@@ -44,7 +40,7 @@ function validarCategoria() {
     return true;
 }
 
-function validarDescripcion() {
+function validar苳escripcion() {
     const valor = inputDescripcion.value.trim();
     if (valor === '' || valor.length < 10) {
         inputDescripcion.classList.remove('is-valid');
@@ -59,11 +55,11 @@ function validarDescripcion() {
 function validarFormularioCompleto() {
     const nombreValido = validarNombre();
     const categoriaValida = validarCategoria();
-    const descripcionValida = validarDescripcion();
+    const descripcionValida = validar苳escripcion();
     return nombreValido && categoriaValida && descripcionValida;
 }
 
-// ── 3. ASIGNACIÓN DE EVENTOS EN TIEMPO REAL (input / change / blur) ──
+// ── 3. ASIGNACIÓN DE EVENTOS EN TIEMPO REAL ──
 inputNombre.addEventListener('blur', validarNombre);
 inputNombre.addEventListener('input', function() {
     if (inputNombre.classList.contains('is-invalid')) validarNombre();
@@ -72,9 +68,9 @@ inputNombre.addEventListener('input', function() {
 inputCategoria.addEventListener('change', validarCategoria);
 inputCategoria.addEventListener('blur', validarCategoria);
 
-inputDescripcion.addEventListener('blur', validarDescripcion);
+inputDescripcion.addEventListener('blur', validar苳escripcion);
 inputDescripcion.addEventListener('input', function() {
-    if (inputDescripcion.classList.contains('is-invalid')) validarDescripcion();
+    if (inputDescripcion.classList.contains('is-invalid')) validar苳escripcion();
 });
 
 // ── 4. ALERTAS DEL SISTEMA ──
@@ -92,55 +88,70 @@ function actualizarContador() {
     contadorTotal.textContent = prospectos.length;
 }
 
-// ── 5. CREACIÓN DINÁMICA DE TARJETAS (MANEJO DEL DOM) ──
-function crearTarjetaProspecto(prospecto) {
-    const cardDiv = document.createElement('div');
-    cardDiv.classList.add('card', 'mb-3', 'shadow-sm', 'border-start', 'border-primary', 'border-4');
-    cardDiv.setAttribute('id', `prospecto-${prospecto.id}`);
+// ── 5. RENDERIZADO DINÁMICO REPETITIVO (REQUERIMIENTO SEMANA 7) ──
+function renderizarListaProspectos() {
+    // Limpiamos el contenedor para evitar repeticiones manuales de bloques HTML
+    contenedorLista.innerHTML = "";
 
-    const cardBody = document.createElement('div');
-    cardBody.classList.add('card-body');
-
-    const badge = document.createElement('span');
-    badge.classList.add('badge', 'bg-info', 'text-dark', 'mb-2');
-    badge.textContent = prospecto.categoria;
-
-    const titulo = document.createElement('h5');
-    titulo.classList.add('card-title');
-    titulo.textContent = prospecto.nombre;
-
-    const texto = document.createElement('p');
-    texto.classList.add('card-text', 'text-muted', 'small');
-    texto.textContent = prospecto.descripcion;
-
-    const btnEliminar = document.createElement('button');
-    btnEliminar.classList.add('btn', 'btn-outline-danger', 'btn-sm', 'w-100', 'mt-2');
-    btnEliminar.textContent = '🗑 Eliminar Registro';
-    btnEliminar.addEventListener('click', function() {
-        prospectos = prospectos.filter(p => p.id !== prospecto.id);
-        cardDiv.remove();
-        actualizarContador();
+    // Verificación de estado de la aplicación
+    if (prospectos.length === 0) {
         inicializarMensajeVacio();
+        return;
+    }
+
+    // Estructura repetitiva exigida: recorremos cada objeto del arreglo
+    prospectos.forEach(function(prospecto) {
+        let colorBorde = "border-primary"; // Por defecto
+        let colorBadge = "bg-info";
+
+        // Estructura condicional exigida: cambiamos los estilos según el estado/tipo de datos
+        if (prospecto.categoria === "Cliente VIP") {
+            colorBorde = "border-warning";
+            colorBadge = "bg-warning text-dark";
+        } else if (prospecto.categoria === "Cliente Frecuente") {
+            colorBorde = "border-success";
+            colorBadge = "bg-success text-white";
+        } else {
+            colorBorde = "border-primary";
+            colorBadge = "bg-primary text-white";
+        }
+
+        // Generación del bloque del componente dinámico en texto
+        const tarjetaHtml = `
+            <div class="card mb-3 shadow-sm border-start ${colorBorde} border-4" id="prospecto-${prospecto.id}">
+                <div class="card-body">
+                    <span class="badge ${colorBadge} mb-2">${prospecto.categoria}</span>
+                    <h5 class="card-title">${prospecto.nombre}</h5>
+                    <p class="card-text text-muted small">${prospecto.descripcion}</p>
+                    <button class="btn btn-outline-danger btn-sm w-100 mt-2" onclick="eliminarProspecto(${prospecto.id})">
+                        🗑 Eliminar Registro
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Se concatena al contenedor de la lista sin repetir bloques fijos de código
+        contenedorLista.innerHTML += tarjetaHtml;
     });
-
-    cardBody.appendChild(badge);
-    cardBody.appendChild(titulo);
-    cardBody.appendChild(texto);
-    cardBody.appendChild(btnEliminar);
-    cardDiv.appendChild(cardBody);
-
-    return cardDiv;
 }
 
-// ── 6. EVENTO SUBMIT (PREVENTDEFAULT REQUERIDO) ──
+// Función encargada de borrar un elemento del arreglo y redibujar
+function eliminarProspecto(idBuscar) {
+    prospectos = prospectos.filter(p => p.id !== idBuscar);
+    actualizarContador();
+    renderizarListaProspectos(); // Volvemos a dibujar de forma limpia
+}
+
+// ── 6. EVENTO SUBMIT (CAPTURA NUEVOS DATOS) ──
 formulario.addEventListener('submit', function(evento) {
-    evento.preventDefault(); // Evita recargar el navegador de forma clásica
+    evento.preventDefault(); 
 
     if (!validarFormularioCompleto()) {
         mostrarAlertaGlobal('error', '⚠ Verifique los campos obligatorios en rojo.');
         return;
     }
 
+    // Empaquetamos la información del formulario en el objeto
     const nuevoProspecto = {
         id: idAutoincremental++,
         nombre: inputNombre.value.trim(),
@@ -148,9 +159,11 @@ formulario.addEventListener('submit', function(evento) {
         descripcion: inputDescripcion.value.trim()
     };
 
+    // Almacenamos en memoria
     prospectos.push(nuevoProspecto);
-    inicializarMensajeVacio();
-    contenedorLista.appendChild(crearTarjetaProspecto(nuevoProspecto));
+    
+    // Renderizado dinámico general
+    renderizarListaProspectos();
     
     mostrarAlertaGlobal('exito', '✔ Prospecto comercial guardado dinámicamente.');
     formulario.reset();
@@ -160,5 +173,5 @@ formulario.addEventListener('submit', function(evento) {
     actualizarContador();
 });
 
-// Lanzamiento inicial del estado de la app
+// Lanzamiento inicial
 inicializarMensajeVacio();

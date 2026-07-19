@@ -8,7 +8,14 @@
 </head>
 <body class="bg-light">
 
-    <div class="container mt-5">
+    <!-- {% block header %} -> Secciones comunes simuladas para base.html -->
+    <header class="bg-dark text-white text-center py-3 mb-4">
+        <h1>Módulo de Operaciones Comerciales</h1>
+    </header>
+    <!-- {% endblock %} -->
+
+    <!-- CONTENIDO PRINCIPAL REUTILIZABLE -->
+    <div class="container">
         <h2 class="text-center mb-4">Registro y Control de Prospectos Comerciales</h2>
         
         <div class="row">
@@ -50,6 +57,7 @@
                 </div>
             </div>
 
+            <!-- SECCIÓN DONDE SE RENDERIZA EL CONTENIDO DINÁMICO -->
             <div class="col-md-7">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4>Lista de Clientes Registrados</h4>
@@ -58,10 +66,17 @@
                     </span>
                 </div>
 
+                <!-- Contenedor dinámico principal -->
                 <div id="contenedor-lista"></div>
             </div>
         </div>
     </div>
+
+    <!-- {% block footer %} -> Pie de página común para base.html -->
+    <footer class="text-center text-muted py-4 mt-5 border-top">
+        <p>&copy; 2026 - Universidad Estatal Amazónica | Infraestructura de Aplicaciones Web</p>
+    </footer>
+    <!-- {% endblock %} -->
 
     <script src="script.js"></script>
 </body>
